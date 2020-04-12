@@ -1,14 +1,20 @@
 from motor.motor_asyncio import AsyncIOMotorClient
+from umongo import MotorAsyncIOInstance
 
 from .utils import joining
 
 
+instance = MotorAsyncIOInstance()
+
+
 async def setup_mongo(app):
     connection_uri = _get_mongo_connetion_uri(app['config']['mongo'])
-    app['db'] = AsyncIOMotorClient(connection_uri)
+    app['db'] = AsyncIOMotorClient(connection_uri).get_database()
+
+    instance.init(app['db'])
 
     async def close_mongo(app):
-        app['db'].close()
+        app['db'].client.close()
     app.on_cleanup.append(close_mongo)
 
 
