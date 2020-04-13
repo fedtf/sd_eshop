@@ -11,7 +11,7 @@ from .utils import get_object_or_404
 
 class ProductListView(web.View):
     async def get(self):
-        products = Product.find({})
+        products = Product.find(self._get_filter_query())
         return web.json_response(
             [product.dump() async for product in products])
 
@@ -25,6 +25,19 @@ class ProductListView(web.View):
             raise HTTPBadRequest(reason=e.normalized_messages())
 
         return web.json_response(product.dump(), status=HTTPStatus.CREATED)
+
+    def _get_filter_query(self):
+        query = {}
+        request_query = self.request.query
+
+        if 'name' in request_query:
+            query['name'] = request_query['name']
+
+        if 'property' in request_query:
+            query[f"properties.{request_query['property']}"] = (
+                request_query.get('value', {'$exists': True}))
+
+        return query
 
 
 class ProductDetailView(web.View):
