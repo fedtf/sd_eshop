@@ -1,5 +1,7 @@
 from uuid import uuid4
 
+from aiohttp.web_exceptions import HTTPNotFound
+
 
 def joining(sep):
     """Joins decorated function results with sep."""
@@ -12,3 +14,12 @@ def joining(sep):
 
 def generate_random_string():
     return str(uuid4()).replace('-', '')
+
+
+async def get_object_or_404(model, query):
+    obj = await model.find_one(query)
+
+    if not obj:
+        raise HTTPNotFound()
+
+    return obj

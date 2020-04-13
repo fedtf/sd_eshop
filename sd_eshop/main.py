@@ -6,10 +6,11 @@ from .db import setup_mongo
 from .models import ensure_indexes
 from .settings import get_config
 from .routes import setup_routes
+from .middlewares import error_middleware
 
 
 def make_app(argv=None):
-    app = web.Application()
+    app = web.Application(middlewares=[error_middleware])
 
     app['config'] = get_config(argv)
 
