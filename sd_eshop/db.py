@@ -34,3 +34,6 @@ def _get_mongo_connetion_uri(mongo_conf):
 
     if database:
         yield f"/{database}"
+
+        if username and password:
+            yield "?authSource=admin"

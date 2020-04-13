@@ -1,3 +1,6 @@
+from uuid import uuid4
+
+
 def joining(sep):
     """Joins decorated function results with sep."""
     def deco(func):
@@ -5,3 +8,7 @@ def joining(sep):
             return sep.join(map(str, func(*args, **kwargs)))
         return wrapped_func
     return deco
+
+
+def generate_random_string():
+    return str(uuid4()).replace('-', '')

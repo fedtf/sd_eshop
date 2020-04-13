@@ -8,16 +8,22 @@ from .settings import get_config
 from .routes import setup_routes
 
 
-def main(argv=None):
+def make_app(argv=None):
     app = web.Application()
-    config = get_config(argv)
 
-    app['config'] = config
+    app['config'] = get_config(argv)
+
     app.on_startup.append(setup_mongo)
     app.on_startup.append(ensure_indexes)
+
     setup_routes(app)
 
-    web.run_app(app, host=config['host'], port=config['port'])
+    return app
+
+
+def main(argv=None):
+    app = make_app(argv)
+    web.run_app(app, host=app['config']['host'], port=app['config']['port'])
 
 
 if __name__ == '__main__':
