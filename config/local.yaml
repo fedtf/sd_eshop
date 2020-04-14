@@ -1,7 +1,7 @@
 mongo:
   database: sd_eshop
-  username: sd_eshop
-  password: sdeshoppass
+  username: $MONGO_USER
+  password: $MONGO_PASS
   host: localhost
   port: 27017
 

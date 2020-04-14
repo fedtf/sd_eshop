@@ -1,0 +1,21 @@
+version: '3.7'
+services:
+  api:
+    build: .
+    ports:
+      - "8080:8080"
+    links:
+      - mongo
+    restart: on-failure
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME
+      - MONGO_INITDB_ROOT_PASSWORD
+  mongo:
+    image: mongo:4.2.5
+    ports:
+      - "27018:27017"
+    volumes:
+      - ./db_data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME
+      - MONGO_INITDB_ROOT_PASSWORD
