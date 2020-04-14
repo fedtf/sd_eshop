@@ -26,7 +26,7 @@ class ProductRetrieveTestCase(SDEshopTestCase):
 
         result = await response.json()
 
-        self.assertEqual(result, serialize_product(product))
+        self.assertEqual(result, serialize_product(product, detailed=True))
 
     @unittest_run_loop
     async def test_retrieve_nonexistent_id(self):

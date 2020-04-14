@@ -8,13 +8,17 @@ from umongo import ValidationError
 
 from .models import Product
 from .utils import get_object_or_404
+from .serializers import ProductDetailSerializer, ProductListSerializer
 
 
 class ProductListView(web.View):
     async def get(self):
         products = Product.find(self._get_filter_query())
-        return web.json_response(
-            [product.dump() async for product in products])
+        serialized_products = [
+            ProductListSerializer().dump(product).data
+            async for product in products
+        ]
+        return web.json_response(serialized_products)
 
     async def post(self):
         try:
@@ -47,7 +51,7 @@ class ProductListView(web.View):
 class ProductDetailView(web.View):
     async def get(self):
         product = await self._get_object()
-        return web.json_response(product.dump())
+        return web.json_response(ProductDetailSerializer().dump(product).data)
 
     async def _get_object(self):
         return await get_object_or_404(

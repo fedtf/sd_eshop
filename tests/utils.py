@@ -30,10 +30,16 @@ class SDEshopTestCase(AioHTTPTestCase):
             )
 
 
-def serialize_product(product):
-    return {
+def serialize_product(product, detailed=False):
+    data = {
         'id': str(product.id),
         'name': product.name,
-        'description': product.description,
-        'properties': product.properties,
     }
+
+    if detailed:
+        data.update({
+            'description': product.description,
+            'properties': product.properties,
+        })
+
+    return data
