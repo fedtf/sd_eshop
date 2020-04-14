@@ -28,7 +28,7 @@ class ProductListTestCase(SDEshopTestCase):
         response = await self.client.get("/products/")
         self.assertEqual(response.status, HTTPStatus.OK)
 
-        results = await response.json()
+        results = (await response.json())['results']
 
         self.assertEqual(
             results,
@@ -36,12 +36,29 @@ class ProductListTestCase(SDEshopTestCase):
         )
 
     @unittest_run_loop
+    async def test_pragination(self):
+        self.app['config']['objects_per_page'] = 1
+
+        response = await self.client.get("/products/")
+        self.assertEqual(response.status, HTTPStatus.OK)
+
+        results = await response.json()
+
+        test_server_url = f'http://{self.server.host}:{self.server.port}'
+        self.assertEqual(results, {
+            'results': list(map(serialize_product, (self.product0,))),
+            'count': 2,
+            'next': f'{test_server_url}/products/?page=2',
+            'previous': None
+        })
+
+    @unittest_run_loop
     async def test_filter_by_name(self):
         response = await self.client.get(
             "/products/", params={'name': 'product0'})
         self.assertEqual(response.status, HTTPStatus.OK)
 
-        results = await response.json()
+        results = (await response.json())['results']
 
         self.assertEqual(
             results, list(map(serialize_product, (self.product0,))))
@@ -52,7 +69,7 @@ class ProductListTestCase(SDEshopTestCase):
             "/products/", params={'property': 'prop0', 'value': '0'})
         self.assertEqual(response.status, HTTPStatus.OK)
 
-        results = await response.json()
+        results = (await response.json())['results']
 
         self.assertEqual(
             results, list(map(serialize_product, (self.product0,))))
@@ -65,7 +82,7 @@ class ProductListTestCase(SDEshopTestCase):
         )
         self.assertEqual(response.status, HTTPStatus.OK)
 
-        results = await response.json()
+        results = (await response.json())['results']
 
         self.assertEqual(
             results, list(map(serialize_product, (self.product1,))))
@@ -76,7 +93,7 @@ class ProductListTestCase(SDEshopTestCase):
             "/products/", params={'property': 'fake_prop', 'value': 'abc'})
         self.assertEqual(response.status, HTTPStatus.OK)
 
-        results = await response.json()
+        results = (await response.json())['results']
 
         self.assertEqual(results, [])
 
@@ -86,7 +103,7 @@ class ProductListTestCase(SDEshopTestCase):
             "/products/", params={'property': 'additional_prop'})
         self.assertEqual(response.status, HTTPStatus.OK)
 
-        results = await response.json()
+        results = (await response.json())['results']
 
         self.assertEqual(
             results, list(map(serialize_product, (self.product1,))))
@@ -103,7 +120,7 @@ class ProductListTestCase(SDEshopTestCase):
         )
         self.assertEqual(response.status, HTTPStatus.OK)
 
-        results = await response.json()
+        results = (await response.json())['results']
 
         self.assertEqual(
             results,

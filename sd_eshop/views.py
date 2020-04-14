@@ -2,23 +2,33 @@ from http import HTTPStatus
 from json import JSONDecodeError
 
 from aiohttp import web
-from aiohttp.web_exceptions import HTTPBadRequest
+from aiohttp.web_exceptions import HTTPBadRequest, HTTPNotFound
 from bson.objectid import ObjectId, InvalidId
 from umongo import ValidationError
 
 from .models import Product
-from .utils import get_object_or_404
+from .utils import get_object_or_404, Paginator, InvalidPage
 from .serializers import ProductDetailSerializer, ProductListSerializer
 
 
 class ProductListView(web.View):
     async def get(self):
-        products = Product.find(self._get_filter_query())
-        serialized_products = [
-            ProductListSerializer().dump(product).data
-            async for product in products
+        # would be nicer not to evaluate everything, and only take pages
+        # via `skip`/`limit`, but looks like motor doesn't support
+        # count on cursor, so we need to cast to list
+        # in order to get the amount of objects anyway
+        product_list = [
+            product async for product in Product.find(self._get_filter_query())
         ]
-        return web.json_response(serialized_products)
+        product_page = self._paginate_objects(product_list)
+
+        return web.json_response({
+            'results': ProductListSerializer(
+                many=True).dump(product_page).data,
+            'count': product_page.paginator.count,
+            'next': self._get_next_page_link(product_page),
+            'previous': self._get_previous_page_link(product_page),
+        })
 
     async def post(self):
         try:
@@ -46,6 +56,28 @@ class ProductListView(web.View):
                 request_query.get('value', {'$exists': True}))
 
         return query
+
+    def _paginate_objects(self, object_list):
+        page_number = self.request.query.get('page', 1)
+        paginator = Paginator(
+            object_list,
+            per_page=self.request.app['config']['objects_per_page']
+        )
+        try:
+            return paginator.page(page_number)
+        except InvalidPage as e:
+            raise HTTPNotFound(reason=f'Invalid page {page_number}: {str(e)}')
+
+    def _get_next_page_link(self, page):
+        if page.has_next():
+            return str(
+                self.request.url.update_query(page=page.next_page_number()))
+
+    def _get_previous_page_link(self, page):
+        if page.has_previous():
+            return str(
+                self.request.url.update_query(page=page.previous_page_number())
+            )
 
 
 class ProductDetailView(web.View):

@@ -18,6 +18,7 @@ CONFIG_TRAFARET = T.Dict({
             'host': T.String(),
             'port': T.Int(),
         }),
+    T.Key('objects_per_page'): T.Int(),
     T.Key('host', optional=True): T.IP,
     T.Key('port', optional=True): T.Int(),
 })

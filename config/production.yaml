@@ -4,3 +4,5 @@ mongo:
   password: $MONGO_INITDB_ROOT_PASSWORD
   host: mongo
   port: 27017
+
+objects_per_page: 25
