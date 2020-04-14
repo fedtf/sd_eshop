@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from json import JSONDecodeError
 
 from aiohttp import web
 from aiohttp.web_exceptions import HTTPBadRequest
@@ -16,7 +17,10 @@ class ProductListView(web.View):
             [product.dump() async for product in products])
 
     async def post(self):
-        data = await self.request.json()
+        try:
+            data = await self.request.json()
+        except JSONDecodeError:
+            raise HTTPBadRequest(reason='Invalid json')
 
         try:
             product = Product(**data)
