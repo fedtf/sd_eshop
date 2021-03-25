@@ -4,19 +4,43 @@
 #
 #    pip-compile
 #
-aiohttp==3.6.2            # via -r requirements.in
-async-timeout==3.0.1      # via aiohttp
-attrs==19.3.0             # via aiohttp
-chardet==3.0.4            # via aiohttp
-idna==2.9                 # via yarl
-marshmallow==2.21.0       # via umongo
-motor==2.1.0              # via -r requirements.in
-multidict==4.7.5          # via aiohttp, yarl
-pymongo==3.10.1           # via motor, umongo
-python-dateutil==2.8.1    # via umongo
-pyyaml==5.3.1             # via -r requirements.in, trafaret-config
-six==1.14.0               # via python-dateutil
-trafaret-config==2.0.2    # via -r requirements.in
-trafaret==2.0.2           # via -r requirements.in, trafaret-config
-umongo==2.2.0             # via -r requirements.in
-yarl==1.4.2               # via aiohttp
+aiohttp==3.6.2
+    # via -r requirements.in
+async-timeout==3.0.1
+    # via aiohttp
+attrs==19.3.0
+    # via aiohttp
+chardet==3.0.4
+    # via aiohttp
+idna==2.9
+    # via yarl
+marshmallow==2.21.0
+    # via umongo
+motor==2.1.0
+    # via -r requirements.in
+multidict==4.7.5
+    # via
+    #   aiohttp
+    #   yarl
+pymongo==3.10.1
+    # via
+    #   motor
+    #   umongo
+python-dateutil==2.8.1
+    # via umongo
+pyyaml==5.4
+    # via
+    #   -r requirements.in
+    #   trafaret-config
+six==1.14.0
+    # via python-dateutil
+trafaret-config==2.0.2
+    # via -r requirements.in
+trafaret==2.0.2
+    # via
+    #   -r requirements.in
+    #   trafaret-config
+umongo==2.2.0
+    # via -r requirements.in
+yarl==1.4.2
+    # via aiohttp
